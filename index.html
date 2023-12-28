@@ -122,30 +122,6 @@
             reader.readAsArrayBuffer(blob);
           });
       });
-      function url_generate(format) {
-        var plaintext = document.getElementById("plaintext").value;
-        lzma.compress(plaintext, 1, function (compressed, error) {
-          if (error) {
-            alert("Failed to compress data: " + error);
-            return;
-          }
-
-          var reader = new FileReader();
-          reader.onload = function () {
-            var base64 = reader.result.substr(reader.result.indexOf(",") + 1);
-            var url =
-              "https://" + location.hostname + location.pathname + "#" + base64;
-            var result;
-            if (format === "markdown") {
-              result = "[Write](" + url + ")";
-            } else {
-              result = url;
-            }
-            text_offer(result);
-          };
-          reader.readAsDataURL(new Blob([new Uint8Array(compressed)]));
-        });
-      }
     </script>
   </head>
   <body>
@@ -172,6 +148,30 @@
       </span>
     </div>
     <script>
+      function url_generate(format) {
+        var plaintext = document.getElementById("plaintext").value;
+        lzma.compress(plaintext, 1, function (compressed, error) {
+          if (error) {
+            alert("Failed to compress data: " + error);
+            return;
+          }
+
+          var reader = new FileReader();
+          reader.onload = function () {
+            var base64 = reader.result.substr(reader.result.indexOf(",") + 1);
+            var url =
+              "https://" + location.hostname + location.pathname + "#" + base64;
+            var result;
+            if (format === "markdown") {
+              result = "[Write](" + url + ")";
+            } else {
+              result = url;
+            }
+            text_offer(result);
+          };
+          reader.readAsDataURL(new Blob([new Uint8Array(compressed)]));
+        });
+      }
       function text_offer(text) {
         document.getElementById("text-offer-value").value = text;
         document.getElementById("nav").classList.add("text-offer");
