@@ -2,11 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <title>Write</title>
     <link rel="stylesheet" href="responsive.css" />
     <style>
       * {
+        user-select: none !important;
+        pointer-events: none !important;
+        touch-action: manipulation !important;
         box-sizing: border-box;
         font-family: monospace;
         font-size: 1.1em;
@@ -84,6 +87,16 @@
       }
       #nav.text-offer .nav-text-offer {
         display: inline;
+      }
+      @media screen and (max-width: 480px) {
+        #plaintext-wrapper {
+          margin: 2px;
+        }
+
+        #nav {
+          overflow-x: scroll;
+          margin: 2px;
+        }
       }
     </style>
     <script src="lzma.js"></script>
