@@ -1,0 +1,10 @@
+@media screen and (max-width: 480px) {
+  #plaintext-wrapper {
+    margin: 2px;
+  }
+
+  #nav {
+    overflow-x: scroll;
+    margin: 2px;
+  }
+}
