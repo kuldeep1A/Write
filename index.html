@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <title>Write</title>
-    <link rel="stylesheet" href="responsive.css" />
     <style>
       * {
         user-select: none !important;
         box-sizing: border-box;
         font-family: monospace;
         font-size: 1.1em;
+        scrollbar-width: none;
       }
 
       #plaintext {
@@ -22,12 +22,12 @@
         resize: none;
         color: #eeeeee;
         background: #000000;
-        border: 2px solid white;
+        border: 5px solid white;
       }
       body.invert #plaintext {
         color: #000000;
         background: #eeeeee;
-        border: 2px solid black;
+        border: 5px solid black;
       }
       #plaintext-wrapper {
         position: absolute;
@@ -40,7 +40,7 @@
         position: absolute;
         left: 0;
         right: 0;
-        bottom: 0;
+        bottom: 1px;
         height: 2em;
         line-height: 2em;
         text-align: right;
@@ -48,6 +48,7 @@
         background: #333333;
         color: #ffffff;
         white-space: nowrap;
+        scrollbar-width: none;
       }
       body.invert #nav {
         background: #aaaaaa;
@@ -72,10 +73,12 @@
       #nav #text-offer-value {
         border: 1px solid #999999;
         background: transparent;
-        width: calc(100vw - 11em);
+        width: calc(100vw - 12em);
         text-overflow: ellipsis;
         color: inherit;
-        margin-right: 5px;
+        pointer-events: none;
+        user-select: none;
+        caret-color: transparent;
       }
       #nav .nav-text-offer {
         display: none;
@@ -86,7 +89,7 @@
       #nav.text-offer .nav-text-offer {
         display: inline;
       }
-      @media screen and (max-width: 480px) {
+      @media screen and (max-width: 850px) {
         #plaintext-wrapper {
           margin: 2px;
         }
@@ -94,6 +97,19 @@
         #nav {
           overflow-x: scroll;
           margin: 2px;
+        }
+      }
+      .time {
+        pointer-events: none;
+        position: absolute;
+        top: 3px;
+        right: 10px;
+        color: #ffffff64;
+        text-align: right;
+      }
+      body.invert {
+        .time {
+          color: rgba(0, 0, 0, 0.254);
         }
       }
     </style>
@@ -136,12 +152,17 @@
   </head>
   <body>
     <div id="plaintext-wrapper">
+      <div class="time">
+        <div>11 July 2024</div>
+        <div>Write</div>
+      </div>
       <textarea name="write" id="plaintext" spellcheck="false"></textarea>
     </div>
     <div id="nav">
       <span class="nav-default">
         <a class="nav-left" target="_blank" href="https://github.com/kuldeep1A/Write"> [github]</a>
         <a class="nav-left" onclick="invert()">[invert colors]</a>
+        <a onclick="url_generate('raw', true)">[copy]</a>
         <a onclick="url_generate('raw')">[generate url]</a>
         <a onclick="url_generate('markdown')">[generate markdown link]</a>
       </span>
@@ -152,8 +173,76 @@
       </span>
     </div>
     <script>
-      function url_generate(format) {
+      function showTemporaryAlert(message, duration) {
+        var alertDiv = document.createElement('div')
+        alertDiv.textContent = message
+        alertDiv.style.position = 'fixed'
+        alertDiv.style.bottom = '20px'
+        alertDiv.style.left = '50%'
+        alertDiv.style.transform = 'translateX(-50%)'
+        alertDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)'
+        alertDiv.style.color = 'white'
+        alertDiv.style.padding = '10px 20px'
+        alertDiv.style.borderRadius = '5px'
+        alertDiv.style.zIndex = '1000'
+        document.body.appendChild(alertDiv)
+
+        setTimeout(function () {
+          document.body.removeChild(alertDiv)
+        }, duration)
+      }
+
+      const monthNames = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ]
+      let div = document.getElementsByClassName('time')[0].children[0]
+      function updateTime() {
+        const now = new Date()
+        const day = now.getDate()
+        const month = monthNames[now.getMonth()]
+        const year = now.getFullYear()
+        const date = `${day} ${month} ${year}`
+        const hour = now.getHours()
+        const minutes = now.getMinutes().toString().padStart(2, '0')
+        const time = `${hour}:${minutes}`
+
+        s = `${date}, ${time}`
+        div.innerHTML = s
+      }
+      updateTime()
+      setInterval(updateTime, 9000)
+
+      function url_generate(format, c = false) {
         var plaintext = document.getElementById('plaintext').value
+
+        if (c) {
+          if (plaintext == '') {
+            showTemporaryAlert('Textarea Empty', 1000)
+            return
+          }
+          plaintext += `\n\n\n${s}\nWrite on https://kuldeep1a.github.io/Write/`
+          navigator.clipboard.writeText(plaintext).then(
+            function () {
+              showTemporaryAlert('Text copied to clipboard successfully!', 1500)
+            },
+            function (err) {
+              showTemporaryAlert('Could not copy text: ' + err, 2000)
+            },
+          )
+          return
+        }
+        plaintext += `\n\n\n${s}\nWrite on https://kuldeep1a.github.io/Write/`
         lzma.compress(plaintext, 1, function (compressed, error) {
           if (error) {
             alert('Failed to compress data: ' + error)
@@ -183,6 +272,7 @@
         var input = document.getElementById('text-offer-value')
         input.select()
         document.execCommand('copy')
+        showTemporaryAlert('Generated Write Url Copy Successfully', 1500)
         text_offer_cancel()
       }
       function text_offer_cancel() {
@@ -195,6 +285,7 @@
         document.body.classList[pref ? 'add' : 'remove']('invert')
       }
     </script>
+    <script src="script.js"></script>
   </body>
 </html>
 
